@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Email Identity Demo - IU Segment Analytics</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .demo-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .email-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .email-box {
+            border: 2px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .email-box.personal {
+            border-color: #4299e1;
+        }
+        .email-box.iu {
+            border-color: #e53e3e;
+        }
+        .email-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .personal .email-title {
+            color: #4299e1;
+        }
+        .iu .email-title {
+            color: #e53e3e;
+        }
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #c53030;
+        }
+        .btn.secondary {
+            background: #4299e1;
+        }
+        .btn.secondary:hover {
+            background: #3182ce;
+        }
+        .result {
+            background: #f0f4f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .highlight {
+            background: #fed7d7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .success {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .identity-link {
+            background: #e6fffa;
+            border: 2px solid #38a169;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        @media (max-width: 768px) {
+            .email-demo {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
+    <!-- Include the same hash function as main demo -->
+    <script>
+        function hashEmail(email) {
+            let hash = 0;
+            const normalizedEmail = email.toLowerCase().trim();
+            
+            for (let i = 0; i < normalizedEmail.length; i++) {
+                const char = normalizedEmail.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            return 'user_' + Math.abs(hash).toString(16);
+        }
+    </script>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>📧 Dual Email Identity Demo</h1>
+        <p>This demo shows how IU students can login with either their personal email OR their IU student email, and Segment will recognize them as the same user.</p>
+        
+        <h3>Real-World IU Student Scenario:</h3>
+        <ul>
+            <li><strong>Registration:</strong> Student signs up with personal email (john.doe@gmail.com)</li>
+            <li><strong>IU System:</strong> Automatically assigns student email (john.doe@student.iu.org)</li>
+            <li><strong>Both Emails Linked:</strong> Student can login with either email address</li>
+            <li><strong>Segment Recognition:</strong> All activity tracked under same user profile</li>
+        </ul>
+    </div>
+
+    <div class="demo-container">
+        <h2>🔗 Email Linking Demonstration</h2>
+        
+        <div class="email-demo">
+            <div class="email-box personal">
+                <div class="email-title">📱 Personal Email Login</div>
+                <p>Student's original email address</p>
+                <input type="email" class="email-input" id="personalEmail" placeholder="john.doe@gmail.com">
+                <button class="btn secondary" onclick="loginWithPersonal()">Login with Personal Email</button>
+                <div id="personalResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <div class="email-box iu">
+                <div class="email-title">🎓 IU Student Email Login</div>
+                <p>Auto-generated university email</p>
+                <input type="email" class="email-input" id="iuEmail" placeholder="john.doe@student.iu.org">
+                <button class="btn" onclick="loginWithIU()">Login with IU Email</button>
+                <div id="iuResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div id="identityComparison" class="identity-link" style="display: none;">
+            <h3 class="success">🎯 Same User Profile Recognized!</h3>
+            <p><strong>User ID:</strong> <span id="linkedUserId" class="highlight"></span></p>
+            <p>Both emails are linked to the same Segment user profile, enabling:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Complete cross-platform journey tracking</li>
+                <li>Unified behavioral analytics</li>
+                <li>Consistent personalization experience</li>
+                <li>Seamless user experience across all IU systems</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>🎯 Segment Implementation Details</h2>
+        
+        <h3>How Both Emails Become Identifiers:</h3>
+        <pre class="result">
+// When student signs up
+const userId = hashEmail(personalEmail);  // Generate consistent ID
+
+// Send to Segment with both emails
+analytics.identify(userId, {
+    email: personalEmail,           // Primary identifier
+    email_personal: personalEmail,  // Custom trait
+    email_iu: iuEmail,             // University email
+    // ... other traits
+});
+
+// Create aliases for both emails
+analytics.alias(personalEmail);    // Links personal email → userId
+analytics.alias(iuEmail);         // Links IU email → userId
+        </pre>
+
+        <h3>Benefits for IU:</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0;">
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>🔄 Seamless Transitions</strong><br>
+                Student can switch between personal/university email without losing tracking
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>📊 Complete Analytics</strong><br>
+                All interactions tracked regardless of which email is used
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>🎯 Better Support</strong><br>
+                Support team can find student by either email address
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>📧 Smart Messaging</strong><br>
+                Avoid duplicate messages across email addresses
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>📋 Demo Instructions for Mobile Viking</h2>
+        
+        <ol>
+            <li><strong>Show the concept:</strong> Explain that IU students have both personal and university emails</li>
+            <li><strong>Enter emails:</strong> Use related emails (e.g., john.doe@gmail.com and john.doe@student.iu.org)</li>
+            <li><strong>Test logins:</strong> Click both login buttons to show same user_id generation</li>
+            <li><strong>Show Segment data:</strong> Both emails appear as identifiers in Profile Explorer</li>
+            <li><strong>Explain value:</strong> Complete user journey regardless of email used</li>
+        </ol>
+
+        <div class="highlight" style="display: block; padding: 1rem; text-align: center; margin: 1rem 0;">
+            <strong>Key Message:</strong> Students can seamlessly interact with IU using either email address, 
+            while Segment maintains a complete, unified view of their entire educational journey.
+        </div>
+    </div>
+
+    <script>
+        let personalUserId = null;
+        let iuUserId = null;
+
+        function loginWithPersonal() {
+            const email = document.getElementById('personalEmail').value.trim();
+            if (!email) {
+                alert('Please enter a personal email address');
+                return;
+            }
+
+            // Generate same user_id as main demo
+            const userId = hashEmail(email);
+            personalUserId = userId;
+
+            // Generate corresponding IU email
+            const emailPrefix = email.split('@')[0];
+            const iuEmail = `${emailPrefix}@student.iu.org`;
+
+            const result = document.getElementById('personalResult');
+            result.innerHTML = `
+                <strong>Personal Email:</strong> ${email}<br>
+                <strong>Generated User ID:</strong> <span class="highlight">${userId}</span><br>
+                <strong>Corresponding IU Email:</strong> ${iuEmail}<br>
+                <strong>Status:</strong> <span class="success">✅ Identified</span>
+            `;
+            result.style.display = 'block';
+
+            // Auto-populate IU email field
+            document.getElementById('iuEmail').value = iuEmail;
+
+            checkBothLogins();
+        }
+
+        function loginWithIU() {
+            const email = document.getElementById('iuEmail').value.trim();
+            if (!email) {
+                alert('Please enter an IU student email address');
+                return;
+            }
+
+            // Extract personal email equivalent
+            const emailPrefix = email.split('@')[0];
+            const personalEmail = document.getElementById('personalEmail').value.trim() || `${emailPrefix}@gmail.com`;
+            
+            // Use personal email for consistent hashing (as in main demo)
+            const userId = hashEmail(personalEmail);
+            iuUserId = userId;
+
+            const result = document.getElementById('iuResult');
+            result.innerHTML = `
+                <strong>IU Email:</strong> ${email}<br>
+                <strong>Generated User ID:</strong> <span class="highlight">${userId}</span><br>
+                <strong>Linked Personal Email:</strong> ${personalEmail}<br>
+                <strong>Status:</strong> <span class="success">✅ Identified</span>
+            `;
+            result.style.display = 'block';
+
+            checkBothLogins();
+        }
+
+        function checkBothLogins() {
+            if (personalUserId && iuUserId) {
+                const comparison = document.getElementById('identityComparison');
+                const userIdSpan = document.getElementById('linkedUserId');
+
+                if (personalUserId === iuUserId) {
+                    userIdSpan.textContent = personalUserId;
+                    comparison.style.display = 'block';
+                } else {
+                    comparison.innerHTML = `
+                        <h3 style="color: #e53e3e;">⚠️ Different Users Detected</h3>
+                        <p>The emails don't correspond to the same student.</p>
+                        <p><strong>Personal Email ID:</strong> ${personalUserId}</p>
+                        <p><strong>IU Email ID:</strong> ${iuUserId}</p>
+                        <p>Make sure the email prefixes match (e.g., john.doe@gmail.com ↔ john.doe@student.iu.org)</p>
+                    `;
+                    comparison.style.display = 'block';
+                    comparison.style.background = '#fed7d7';
+                    comparison.style.borderColor = '#e53e3e';
+                }
+            }
+        }
+
+        // Pre-populate with example
+        document.getElementById('personalEmail').value = 'john.doe@gmail.com';
+        document.getElementById('iuEmail').value = 'john.doe@student.iu.org';
+    </script>
+</body>
+</html>

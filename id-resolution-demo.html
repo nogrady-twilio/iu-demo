@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segment ID Resolution Demo - IU University</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .demo-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .system-box {
+            border: 2px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .system-box.website {
+            border-color: #4299e1;
+        }
+        .system-box.mycampus {
+            border-color: #e53e3e;
+        }
+        .system-box.library {
+            border-color: #38a169;
+        }
+        .system-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .website .system-title {
+            color: #4299e1;
+        }
+        .mycampus .system-title {
+            color: #e53e3e;
+        }
+        .library .system-title {
+            color: #38a169;
+        }
+        .btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #c53030;
+        }
+        .btn.blue {
+            background: #4299e1;
+        }
+        .btn.blue:hover {
+            background: #3182ce;
+        }
+        .btn.green {
+            background: #38a169;
+        }
+        .btn.green:hover {
+            background: #2f855a;
+        }
+        .result {
+            background: #f0f4f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            text-align: left;
+        }
+        .highlight {
+            background: #fed7d7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .success {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .resolution-result {
+            background: #e6fffa;
+            border: 2px solid #38a169;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 2rem 0;
+            display: none;
+        }
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #cbd5e0;
+        }
+        .timeline-item.active {
+            border-left-color: #38a169;
+            background: #e6fffa;
+        }
+        .timeline-number {
+            background: #e53e3e;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: 700;
+        }
+        .timeline-item.active .timeline-number {
+            background: #38a169;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🔄 Segment ID Resolution Demo</h1>
+        <p>This demonstrates how Segment's ID Resolution automatically merges user profiles when the same person uses different email addresses across multiple IU systems.</p>
+        
+        <div class="highlight" style="display: block; padding: 1rem; text-align: center; margin: 1rem 0;">
+            <strong>Key Concept:</strong> Each system sends only ONE email property, but ID Resolution creates a unified profile with multiple identifiers.
+        </div>
+        
+        <h3>Real IU Student Scenario:</h3>
+        <ul>
+            <li><strong>Step 1:</strong> Student browses website with personal email</li>
+            <li><strong>Step 2:</strong> Student logs into myCampus with IU email</li>
+            <li><strong>Step 3:</strong> Student accesses library with IU email</li>
+            <li><strong>Result:</strong> Segment automatically recognizes all as same person</li>
+        </ul>
+    </div>
+
+    <div class="demo-container">
+        <h2>🎯 Simulate Multi-System Journey</h2>
+        <p>Click the buttons in order to simulate a student's journey across IU systems:</p>
+        
+        <div class="system-grid">
+            <div class="system-box website">
+                <div class="system-title">🌐 IU Website</div>
+                <p><strong>Email:</strong> john.doe@gmail.com</p>
+                <p>Student browses programmes and applies</p>
+                <button class="btn blue" onclick="simulateWebsiteLogin()">1. Browse & Apply</button>
+                <div id="websiteResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <div class="system-box mycampus">
+                <div class="system-title">🎓 myCampus System</div>
+                <p><strong>Email:</strong> john.doe@student.iu.org</p>
+                <p>Student accesses courses and grades</p>
+                <button class="btn" onclick="simulateMyCampusLogin()" disabled id="mycampusBtn">2. Access myCampus</button>
+                <div id="mycampusResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <div class="system-box library">
+                <div class="system-title">📚 Library System</div>
+                <p><strong>Email:</strong> john.doe@student.iu.org</p>
+                <p>Student accesses digital resources</p>
+                <button class="btn green" onclick="simulateLibraryLogin()" disabled id="libraryBtn">3. Use Library</button>
+                <div id="libraryResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div id="resolutionResult" class="resolution-result">
+            <h3 class="success">✅ ID Resolution Success!</h3>
+            <p><strong>User ID:</strong> <span id="resolvedUserId" class="highlight"></span></p>
+            <p><strong>Merged Identifiers:</strong></p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>john.doe@gmail.com (personal)</li>
+                <li>john.doe@student.iu.org (institutional)</li>
+            </ul>
+            <p><strong>Benefits:</strong> Complete journey tracking, unified analytics, seamless experience</p>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>📊 Technical Implementation</h2>
+        
+        <h3>What Each System Sends (ONE email only):</h3>
+        <div class="timeline">
+            <div class="timeline-item" id="step1">
+                <div class="timeline-number">1</div>
+                <div>
+                    <strong>IU Website:</strong><br>
+                    <code>analytics.identify(userId, {email: "john.doe@gmail.com", ...})</code>
+                </div>
+            </div>
+            <div class="timeline-item" id="step2">
+                <div class="timeline-number">2</div>
+                <div>
+                    <strong>myCampus:</strong><br>
+                    <code>analytics.identify(userId, {email: "john.doe@student.iu.org", ...})</code>
+                </div>
+            </div>
+            <div class="timeline-item" id="step3">
+                <div class="timeline-number">3</div>
+                <div>
+                    <strong>Library:</strong><br>
+                    <code>analytics.identify(userId, {email: "john.doe@student.iu.org", ...})</code>
+                </div>
+            </div>
+        </div>
+
+        <h3>Segment's ID Resolution Result:</h3>
+        <div class="result">
+Profile Identifiers:
+- user_abc123 (user_id)
+- john.doe@gmail.com (from website)
+- john.doe@student.iu.org (from myCampus/Library)
+
+Merged Traits:
+- All properties from all systems
+- Complete behavioral history
+- Unified engagement scoring
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>🎯 Benefits for IU</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>📈 Complete Analytics</strong><br>
+                Full funnel from website visit to graduation
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>🎯 Better Personalization</strong><br>
+                Recommendations based on complete behavior
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>🔍 Easier Support</strong><br>
+                Find students by any email address
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>📧 Smart Messaging</strong><br>
+                No duplicate communications across systems
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+        let step = 0;
+
+        function hashEmail(email) {
+            let hash = 0;
+            const normalizedEmail = email.toLowerCase().trim();
+            
+            for (let i = 0; i < normalizedEmail.length; i++) {
+                const char = normalizedEmail.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            return 'user_' + Math.abs(hash).toString(16);
+        }
+
+        function simulateWebsiteLogin() {
+            const personalEmail = 'john.doe@gmail.com';
+            currentUserId = hashEmail(personalEmail);
+            
+            const result = document.getElementById('websiteResult');
+            result.innerHTML = `
+                <strong>System:</strong> IU Website<br>
+                <strong>Email Sent:</strong> ${personalEmail}<br>
+                <strong>User ID:</strong> <span class="highlight">${currentUserId}</span><br>
+                <strong>Context:</strong> Programme browsing, application
+            `;
+            result.style.display = 'block';
+            
+            // Enable next step
+            document.getElementById('mycampusBtn').disabled = false;
+            document.getElementById('step1').classList.add('active');
+            step = 1;
+        }
+
+        function simulateMyCampusLogin() {
+            if (step !== 1) return;
+            
+            const iuEmail = 'john.doe@student.iu.org';
+            // Same user_id because it's the same person
+            
+            const result = document.getElementById('mycampusResult');
+            result.innerHTML = `
+                <strong>System:</strong> myCampus<br>
+                <strong>Email Sent:</strong> ${iuEmail}<br>
+                <strong>User ID:</strong> <span class="highlight">${currentUserId}</span><br>
+                <strong>Context:</strong> Course access, grades
+            `;
+            result.style.display = 'block';
+            
+            // Enable next step
+            document.getElementById('libraryBtn').disabled = false;
+            document.getElementById('step2').classList.add('active');
+            step = 2;
+        }
+
+        function simulateLibraryLogin() {
+            if (step !== 2) return;
+            
+            const iuEmail = 'john.doe@student.iu.org';
+            
+            const result = document.getElementById('libraryResult');
+            result.innerHTML = `
+                <strong>System:</strong> Library Portal<br>
+                <strong>Email Sent:</strong> ${iuEmail}<br>
+                <strong>User ID:</strong> <span class="highlight">${currentUserId}</span><br>
+                <strong>Context:</strong> Digital resources, research
+            `;
+            result.style.display = 'block';
+            
+            // Show resolution result
+            document.getElementById('step3').classList.add('active');
+            document.getElementById('resolvedUserId').textContent = currentUserId;
+            document.getElementById('resolutionResult').style.display = 'block';
+            
+            // Scroll to result
+            document.getElementById('resolutionResult').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

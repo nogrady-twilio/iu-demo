@@ -6,9 +6,14 @@ A comprehensive replica of iu.org with embedded Segment tracking for the Mobile 
 
 This website demonstrates three critical IU use cases with full Segment tracking:
 
-### 🔗 Cross-Device User Recognition
+### 🔗 Cross-Device Recognition & ID Resolution
 - **User ID Strategy**: Email addresses are hashed to create consistent user_id across devices
 - **Same Email = Same User**: `student@iu.de` always generates the same user_id (e.g., `user_f4a8b2c`)
+- **ID Resolution Magic**: Each system sends only ONE email property:
+  - IU Website: `{email: "john.doe@gmail.com"}` → `user_abc123`
+  - myCampus: `{email: "john.doe@student.iu.org"}` → `user_abc123` (same user!)
+  - Library: `{email: "john.doe@student.iu.org"}` → `user_abc123` (same user!)
+- **Segment Auto-Merge**: ID Resolution automatically recognizes multiple emails belong to same person
 - **Cross-Device Journey**: Student browsing on mobile, applying on laptop, attending events on tablet - all tracked as same user
 - **Privacy-Friendly**: Email is hashed, not stored in plain text in analytics
 

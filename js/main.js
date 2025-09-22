@@ -223,7 +223,10 @@ function handleLogin(event) {
     
     // Show cross-device recognition in console
     console.log(`🔗 Cross-Device Recognition: Email "${email}" → User ID "${userId}"`);
-    console.log('💡 This same user_id will be generated on any device with this email');
+    console.log(`📧 Personal Email: ${currentUser.email_personal}`);
+    console.log(`🎓 IU Email: ${currentUser.email_iu}`);
+    console.log('💡 Same user_id used across all devices and IU systems');
+    console.log('🎯 Try: demonstrateIDResolution() to see email merging in action');
     
     // Track onboarding step - will create "MyCampus Login" event
     trackOnboardingStep('mycampus_login', true, {
@@ -270,7 +273,10 @@ function handleSignup(event) {
     // Generate consistent user_id from hashed email for cross-device recognition
     const userId = hashEmail(userData.email_personal);
     userData.userId = userId;
-    userData.email_iu = userData.email_personal.replace('@', '@student.iu.org');
+    
+    // Generate IU email address for students
+    const emailPrefix = userData.email_personal.split('@')[0];
+    userData.email_iu = `${emailPrefix}@student.iu.org`;
     
     // Track application started
     trackApplicationStarted(userData.program, getProgramName(userData.program));
@@ -280,7 +286,9 @@ function handleSignup(event) {
     
     // Show cross-device recognition in console
     console.log(`🔗 Cross-Device Recognition: Email "${userData.email_personal}" → User ID "${userId}"`);
-    console.log('💡 This same user_id will be generated on any device with this email');
+    console.log(`🎓 Generated IU Email: ${userData.email_iu}`);
+    console.log('💡 Same user_id will be used across all devices and IU systems');
+    console.log('🎯 Try: demonstrateIDResolution() to see email merging in action');
     
     // Track application submitted
     trackApplicationSubmitted(userData.program, getProgramName(userData.program), userId);
