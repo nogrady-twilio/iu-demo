@@ -1,0 +1,8 @@
+This directory contains placeholder references for IU.org demo images.
+
+In a real implementation, you would include:
+- iu-logo.svg: IU International University logo
+- hero-student.jpg: Student success story image for hero section
+- Various programme and event images
+
+For the demo, CSS handles these as placeholders with appropriate styling.

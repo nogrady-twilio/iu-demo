@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Device User Recognition Demo</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .demo-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #c53030;
+        }
+        .result {
+            background: #f0f4f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .highlight {
+            background: #fed7d7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .success {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .device-simulation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .device-box {
+            border: 2px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .device-title {
+            font-weight: 700;
+            color: #e53e3e;
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .device-simulation {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🔗 Cross-Device User Recognition Demo</h1>
+        <p>This demo shows how Segment can recognize the same user across different devices using a hashed email as the user_id.</p>
+        
+        <h3>How It Works:</h3>
+        <ul>
+            <li><strong>Consistent User ID:</strong> Each email generates the same user_id hash every time</li>
+            <li><strong>Cross-Device Tracking:</strong> Same email on laptop, phone, tablet = same user_id</li>
+            <li><strong>Privacy-Friendly:</strong> Email is hashed, not stored in plain text</li>
+            <li><strong>Segment Integration:</strong> All events are tied to the same user profile</li>
+        </ul>
+    </div>
+
+    <div class="demo-container">
+        <h2>Test Email Hashing</h2>
+        <p>Enter an email address to see the generated user_id. The same email will always produce the same user_id.</p>
+        
+        <input type="email" class="email-input" id="testEmail" placeholder="Enter email address (e.g., student@university.com)">
+        <br>
+        <button class="btn" onclick="generateUserId()">Generate User ID</button>
+        <button class="btn" onclick="testCommonEmails()">Test Common Examples</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="demo-container">
+        <h2>Cross-Device Simulation</h2>
+        <p>This shows how the same user would be recognized across different devices:</p>
+        
+        <div class="device-simulation">
+            <div class="device-box">
+                <div class="device-title">📱 Mobile Device</div>
+                <input type="email" class="email-input" id="mobileEmail" placeholder="student@iu.de">
+                <button class="btn" onclick="simulateDevice('mobile')">Login on Mobile</button>
+                <div id="mobileResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <div class="device-box">
+                <div class="device-title">💻 Desktop Device</div>
+                <input type="email" class="email-input" id="desktopEmail" placeholder="student@iu.de">
+                <button class="btn" onclick="simulateDevice('desktop')">Login on Desktop</button>
+                <div id="desktopResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div id="crossDeviceComparison" style="display: none; margin-top: 2rem; padding: 1rem; background: #e6fffa; border-radius: 8px; text-align: center;">
+            <h3 class="success">✅ Same User Recognized Across Devices!</h3>
+            <p>Segment will track this as the same user profile, enabling:</p>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Cross-device journey tracking</li>
+                <li>Unified user behavior analysis</li>
+                <li>Consistent personalization</li>
+                <li>Complete customer lifecycle view</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>Demo Benefits for IU</h2>
+        <div class="highlight">Real-World Scenario:</div>
+        <p><strong>Student Journey:</strong></p>
+        <ol>
+            <li><strong>Mobile:</strong> Student browses programmes on phone → <code>user_f4a8b2c</code></li>
+            <li><strong>Desktop:</strong> Student applies from laptop with same email → <span class="success">Same user_id!</span></li>
+            <li><strong>Tablet:</strong> Student attends webinar on tablet → <span class="success">Same user_id!</span></li>
+        </ol>
+        
+        <p><strong>Segment Benefits:</strong></p>
+        <ul>
+            <li>Complete journey tracking across all touchpoints</li>
+            <li>Accurate funnel analysis and conversion rates</li>
+            <li>Personalized communication based on full behavior</li>
+            <li>Churn prevention with complete activity history</li>
+        </ul>
+    </div>
+
+    <script>
+        /**
+         * Hash function (same as in main IU demo)
+         */
+        function hashEmail(email) {
+            let hash = 0;
+            const normalizedEmail = email.toLowerCase().trim();
+            
+            for (let i = 0; i < normalizedEmail.length; i++) {
+                const char = normalizedEmail.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            
+            return 'user_' + Math.abs(hash).toString(16);
+        }
+
+        function generateUserId() {
+            const email = document.getElementById('testEmail').value.trim();
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+            
+            const userId = hashEmail(email);
+            const result = document.getElementById('result');
+            
+            result.innerHTML = `
+                <strong>Email:</strong> ${email}<br>
+                <strong>Generated User ID:</strong> <span class="highlight">${userId}</span><br>
+                <strong>Hash Value:</strong> ${Math.abs(email.toLowerCase().split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)).toString(16)}
+            `;
+            result.style.display = 'block';
+        }
+
+        function testCommonEmails() {
+            const examples = [
+                'john.doe@iu.de',
+                'maria.schmidt@student.iu.org', 
+                'alex.mueller@gmail.com',
+                'sarah.johnson@outlook.com'
+            ];
+            
+            let resultHtml = '<strong>Common Email Examples:</strong><br><br>';
+            
+            examples.forEach(email => {
+                const userId = hashEmail(email);
+                resultHtml += `${email} → <span class="highlight">${userId}</span><br>`;
+            });
+            
+            const result = document.getElementById('result');
+            result.innerHTML = resultHtml;
+            result.style.display = 'block';
+        }
+
+        let mobileUserId = null;
+        let desktopUserId = null;
+
+        function simulateDevice(device) {
+            const emailInput = document.getElementById(device + 'Email');
+            const resultDiv = document.getElementById(device + 'Result');
+            
+            const email = emailInput.value.trim();
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+            
+            const userId = hashEmail(email);
+            
+            if (device === 'mobile') {
+                mobileUserId = userId;
+            } else {
+                desktopUserId = userId;
+            }
+            
+            resultDiv.innerHTML = `
+                <strong>Email:</strong> ${email}<br>
+                <strong>User ID:</strong> <span class="highlight">${userId}</span><br>
+                <strong>Device:</strong> ${device.charAt(0).toUpperCase() + device.slice(1)}
+            `;
+            resultDiv.style.display = 'block';
+            
+            // Check if both devices have been tested
+            if (mobileUserId && desktopUserId) {
+                const comparison = document.getElementById('crossDeviceComparison');
+                
+                if (mobileUserId === desktopUserId) {
+                    comparison.style.display = 'block';
+                } else {
+                    comparison.innerHTML = `
+                        <h3 style="color: #e53e3e;">⚠️ Different Users Detected</h3>
+                        <p>The email addresses are different, so different user IDs were generated.</p>
+                        <p><strong>Mobile:</strong> ${mobileUserId}</p>
+                        <p><strong>Desktop:</strong> ${desktopUserId}</p>
+                    `;
+                    comparison.style.display = 'block';
+                    comparison.style.background = '#fed7d7';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

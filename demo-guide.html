@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IU.org Segment Demo Guide</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .header {
+            background: #e53e3e;
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .demo-section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .demo-step {
+            background: #f0f4f8;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #e53e3e;
+            border-radius: 8px;
+        }
+        .event-code {
+            background: #2d3748;
+            color: #a0aec0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        .highlight {
+            background: #fed7d7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .success {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .btn-demo {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-demo:hover {
+            background: #c53030;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .metric-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e53e3e;
+        }
+        .metric-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 IU.org Segment Analytics Demo</h1>
+        <p>Complete demonstration guide for Mobile Viking team</p>
+        <a href="index.html" class="btn-demo">Launch Demo Website</a>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎬 Demo Script (15 minutes)</h2>
+        <p>Follow this script to demonstrate all three IU use cases with live Segment tracking.</p>
+        
+        <div class="demo-step">
+            <h3>1. Setup & Introduction (1 minute)</h3>
+            <ul>
+                <li>Open <strong>index.html</strong> in browser</li>
+                <li>Open <strong>browser console</strong> (F12 → Console)</li>
+                <li>Open <strong>Segment debugger</strong> if available</li>
+                <li>Point out the IU.org aesthetic match and responsive design</li>
+            </ul>
+            <div class="event-code">
+Expected Console Output:
+🎯 Segment Analytics initialized for IU.org demo
+📄 Page Viewed: {title: "IU International University...", timestamp: "..."}
+            </div>
+        </div>
+
+        <div class="demo-step">
+            <h3>2. New Student Onboarding Demo (4 minutes)</h3>
+            <p><span class="highlight">Use Case:</span> Guide new enrollees through first weeks to reduce "no login in 7 days"</p>
+            <ul>
+                <li><strong>Click "Apply Now"</strong> → Shows signup modal</li>
+                <li><strong>Fill out complete form:</strong>
+                    <ul>
+                        <li>Name: Demo Student</li>
+                        <li>Email: demo@student.com</li>
+                        <li>Phone: +49123456789</li>
+                        <li>Programme: MBA</li>
+                        <li>Semester: Spring 2025</li>
+                        <li>Preferred Channel: WhatsApp</li>
+                        <li><strong>Check consent boxes</strong> to show granular consent tracking</li>
+                    </ul>
+                </li>
+                <li><strong>Submit application</strong> → Shows complete tracking chain</li>
+            </ul>
+            <div class="event-code">
+Expected Segment Events:
+✅ Application Started {program_id: "business_mba", program_name: "MBA"}
+✅ User Identified {userId, email_personal, phone, program, preferred_channel, consent...}
+✅ Application Submitted {program_id: "business_mba", user_id}
+✅ Consent Updated {channel: "email", purpose: "marketing", value: true}
+✅ Contact Preference Set {preferred_channel: "whatsapp"}
+✅ Account Created {step: "account_created", completed: true}
+✅ Profile Completed {step: "profile_completed", completed: true}
+            </div>
+        </div>
+
+        <div class="demo-step">
+            <h3>3. Churn Prevention Demo (3 minutes)</h3>
+            <p><span class="highlight">Use Case:</span> Reduce ~10% pre-enrollment churn and ~15% early churn</p>
+            <ul>
+                <li><strong>Run in console:</strong> <code>demoChurnPrevention()</code></li>
+                <li>Watch engagement tracking and behavioral patterns</li>
+                <li>Show how invoice interactions indicate churn risk</li>
+            </ul>
+            <div class="event-code">
+Console Command: demoChurnPrevention()
+
+Expected Events:
+💡 Engagement Event: {event_type: "no_mycampus_login", days_since_login: 8}
+💰 Invoice Viewed: {invoice_id: "inv_2024_001", amount: 2500, status: "overdue"}
+            </div>
+        </div>
+
+        <div class="demo-step">
+            <h3>4. Information Event Tracking (3 minutes)</h3>
+            <p><span class="highlight">Use Case:</span> Track RSVP vs attendance, send timely reminders and follow-ups</p>
+            <ul>
+                <li><strong>Scroll to Information Events section</strong></li>
+                <li><strong>Click "RSVP Now"</strong> on any event → Requires login first</li>
+                <li><strong>After login, RSVP again</strong> → Shows complete tracking</li>
+                <li><strong>Run in console:</strong> <code>demoEventTracking()</code></li>
+                <li>Show complete webinar journey from RSVP to attendance</li>
+            </ul>
+            <div class="event-code">
+Expected Events:
+📅 Event RSVPed {event_id: "event_001", title: "Business & Management Info Session", starts_at}
+📧 Event Confirmation Email Sent {event_id, user_id}
+📅 Event Reminder Sent {reminder_type: "email", hours_before: 24}
+✅ Event Attended {attendance_duration_minutes: 85, engagement_score: 0.8}
+            </div>
+        </div>
+
+        <div class="demo-step">
+            <h3>5. Consent & Preference Management (2 minutes)</h3>
+            <p><span class="highlight">Feature:</span> Granular consent tracking across all channels</p>
+            <ul>
+                <li><strong>Click "Consent Settings"</strong> in user dashboard</li>
+                <li><strong>Toggle different preferences:</strong>
+                    <ul>
+                        <li>Email marketing consent</li>
+                        <li>WhatsApp marketing consent</li>
+                        <li>Change preferred channel</li>
+                    </ul>
+                </li>
+                <li><strong>Save changes</strong> → Shows granular consent tracking</li>
+            </ul>
+            <div class="event-code">
+Expected Events:
+🔒 Consent Updated {channel: "email", purpose: "marketing", value: false, user_id}
+📞 Contact Preference Set {preferred_channel: "sms", user_id}
+👤 User Re-identified with updated traits
+            </div>
+        </div>
+
+        <div class="demo-step">
+            <h3>6. Complete Demo Showcase (2 minutes)</h3>
+            <p><span class="highlight">Grand Finale:</span> Run all demo scenarios together</p>
+            <ul>
+                <li><strong>Run in console:</strong> <code>runDemoScenarios()</code></li>
+                <li>Watch all three use cases play out automatically</li>
+                <li>Show real-time Segment data if debugger available</li>
+                <li>Highlight meaningful event names and data quality</li>
+            </ul>
+            <div class="event-code">
+Console Command: runDemoScenarios()
+
+This runs all three demos sequentially:
+1. Churn Prevention (immediate)
+2. Onboarding Journey (after 8 seconds)  
+3. Event Tracking (after 15 seconds)
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>📊 Key Metrics & Data Points</h2>
+        <div class="metrics">
+            <div class="metric-card">
+                <div class="metric-number">15+</div>
+                <div class="metric-label">Segment Events Implemented</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">100%</div>
+                <div class="metric-label">Required Traits Captured</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">4</div>
+                <div class="metric-label">Consent Channels Tracked</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number">3</div>
+                <div class="metric-label">Use Cases Demonstrated</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🎯 Key Value Propositions</h2>
+        <div class="demo-step">
+            <h3>1. Complete Customer Journey Tracking</h3>
+            <p>From anonymous visitor → lead → student → graduate with <span class="success">100% data continuity</span></p>
+        </div>
+        
+        <div class="demo-step">
+            <h3>2. Consent-First Architecture</h3>
+            <p>Granular consent management for <span class="success">GDPR compliance</span> and personalized experiences</p>
+        </div>
+        
+        <div class="demo-step">
+            <h3>3. Real-Time Risk Detection</h3>
+            <p>Proactive churn prevention with <span class="success">automated intervention triggers</span></p>
+        </div>
+        
+        <div class="demo-step">
+            <h3>4. Multi-Channel Orchestration</h3>
+            <p>Unified profile for <span class="success">email, WhatsApp, SMS</span> with preference respect</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>🔧 Technical Highlights</h2>
+        <ul>
+            <li><strong>Segment Write Key:</strong> <code>U5R8FMbQEwGcu6DGxNHTpJLEXu6h1SFs</code></li>
+            <li><strong>Event Completeness:</strong> All required traits and properties included</li>
+            <li><strong>Real-Time Tracking:</strong> Events fire immediately on user actions</li>
+            <li><strong>Cross-Platform Ready:</strong> Works on desktop and mobile</li>
+            <li><strong>Production Ready:</strong> Error handling and fallback mechanisms</li>
+        </ul>
+    </div>
+
+    <div class="demo-section">
+        <h2>🚀 Next Steps</h2>
+        <ol>
+            <li><strong>Connect downstream tools:</strong> SendGrid, WhatsApp Business API, Flex</li>
+            <li><strong>Build Segment audiences:</strong> At-risk students, high-intent prospects</li>
+            <li><strong>Set up automated journeys:</strong> Kafka → Segment → Action platforms</li>
+            <li><strong>Create analytics dashboards:</strong> Real-time monitoring and reporting</li>
+            <li><strong>A/B test interventions:</strong> Optimize messaging and timing</li>
+        </ol>
+    </div>
+
+    <div style="text-align: center; padding: 2rem; background: #2d3748; color: white; border-radius: 12px; margin-top: 2rem;">
+        <h2>🎯 Demo Ready!</h2>
+        <p>All systems operational for Mobile Viking demonstration</p>
+        <a href="index.html" class="btn-demo">Start Demo</a>
+    </div>
+</body>
+</html>
