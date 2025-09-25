@@ -251,13 +251,17 @@ function identifyUser(userId, traits = {}) {
     window.IU_UserState.userId = userId;
     window.IU_UserState.userTraits = userTraits;
     
-    // Keep all email information as traits (not identifiers)
-    // User ID is now the actual email address
+    // Add standard 'email' trait for Segment identifier promotion
+    if (userTraits.email_personal) {
+        userTraits.email = userTraits.email_personal; // Standard email field for identifier
+    }
     
     // Call Segment identify with email as user_id and traits
     analytics.identify(userId, userTraits);
     console.log('👤 User Identified:', userId);
+    console.log('📧 Email Identifier Trait:', userTraits.email);
     console.log('📧 Email Traits:', {
+        email: userTraits.email,           // ← Promoted as identifier
         email_personal: userTraits.email_personal,
         email_iu: userTraits.email_iu
     });
@@ -505,11 +509,12 @@ function demonstrateEmailTraits() {
     const userId = window.IU_UserState.userId;
     const userTraits = window.IU_UserState.userTraits;
     
-    console.log('🎬 Email Traits Demo:');
+    console.log('🎬 Email Traits & Identifier Demo:');
     console.log(`👤 User ID: ${userId}`);
-    console.log(`📧 Personal Email (trait): ${userTraits.email_personal}`);
-    console.log(`🎓 IU Email (trait): ${userTraits.email_iu}`);
-    console.log('💡 Both emails are stored as traits on the same profile');
+    console.log(`🔍 Email Identifier: ${userTraits.email} ← Promoted as identifier`);
+    console.log(`📧 Email Personal (trait): ${userTraits.email_personal}`);
+    console.log(`🎓 Email IU (trait): ${userTraits.email_iu}`);
+    console.log('💡 "email" trait is promoted as identifier, others remain as traits');
 }
 
 // Make functions available globally for HTML onclick handlers

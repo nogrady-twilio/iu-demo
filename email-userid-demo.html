@@ -119,6 +119,7 @@ const iuEmail = "john.doe@student.iu.org";
 
 // Segment identify call
 analytics.identify(userEmail, {  // ← Email IS the user_id
+    email: userEmail,           // ← Promoted as identifier
     email_personal: userEmail,   // ← Stored as trait
     email_iu: iuEmail,          // ← Stored as trait
     first_name: "John",
@@ -132,11 +133,13 @@ analytics.identify(userEmail, {  // ← Email IS the user_id
         <h3>Result in Segment Profile Explorer:</h3>
         <div class="traits-display">
             <div class="trait-box">
-                <strong>User ID (Identifier)</strong><br>
-                <code class="highlight">john.doe@gmail.com</code>
+                <strong>Identifiers</strong><br>
+                <code class="highlight">john.doe@gmail.com</code> (User ID)<br>
+                <code class="highlight">john.doe@gmail.com</code> (Email)
             </div>
             <div class="trait-box">
                 <strong>Profile Traits</strong><br>
+                <code>email: john.doe@gmail.com</code> ← Identifier<br>
                 <code>email_personal: john.doe@gmail.com</code><br>
                 <code>email_iu: john.doe@student.iu.org</code><br>
                 <code>first_name: John</code><br>
@@ -221,6 +224,7 @@ preferred_channel = "whatsapp" AND whatsapp_marketing_opt_in = true
                 
                 <h5 style="margin-top: 1rem;">Profile Traits:</h5>
                 <div style="background: #f8fafc; padding: 1rem; border-radius: 4px; margin: 0.5rem 0;">
+                    <strong>email:</strong> "${email}" <span style="color: #e53e3e;">← Identifier</span><br>
                     <strong>email_personal:</strong> "${email}"<br>
                     <strong>email_iu:</strong> "${iuEmail}"<br>
                     <strong>first_name:</strong> "John"<br>
@@ -235,6 +239,7 @@ preferred_channel = "whatsapp" AND whatsapp_marketing_opt_in = true
                 <h5 style="margin-top: 1rem;">Segment Analytics Call:</h5>
                 <div style="background: #2d3748; color: #cbd5e0; padding: 1rem; border-radius: 4px; font-family: monospace; font-size: 12px;">
 analytics.identify("${email}", {<br>
+&nbsp;&nbsp;email: "${email}",<span style="color: #68d391;"> // ← Promoted as identifier</span><br>
 &nbsp;&nbsp;email_personal: "${email}",<br>
 &nbsp;&nbsp;email_iu: "${iuEmail}",<br>
 &nbsp;&nbsp;first_name: "John",<br>

@@ -210,10 +210,11 @@ function handleLogin(event) {
     identifyUser(userId, currentUser);
     
     // Show user identification in console
-    console.log(`👤 User ID set to: "${userId}"`);
-    console.log(`📧 Personal Email: ${currentUser.email_personal}`);
-    console.log(`🎓 IU Email: ${currentUser.email_iu}`);
-    console.log('💡 Both emails stored as traits on the profile');
+    console.log(`👤 User ID: "${userId}"`);
+    console.log(`🔍 Email Identifier: ${currentUser.email_personal} ← Promoted as identifier`);
+    console.log(`📧 Email Personal (trait): ${currentUser.email_personal}`);
+    console.log(`🎓 Email IU (trait): ${currentUser.email_iu}`);
+    console.log('💡 "email" trait is promoted as identifier in Segment Profile Explorer');
     
     // Track onboarding step - will create "MyCampus Login" event
     trackOnboardingStep('mycampus_login', true, {
@@ -272,10 +273,11 @@ function handleSignup(event) {
     identifyUser(userId, userData);
     
     // Show user identification in console
-    console.log(`👤 User ID set to: "${userId}"`);
-    console.log(`📧 Personal Email: ${userData.email_personal}`);
-    console.log(`🎓 Generated IU Email: ${userData.email_iu}`);
-    console.log('💡 Both emails stored as traits on the profile');
+    console.log(`👤 User ID: "${userId}"`);
+    console.log(`🔍 Email Identifier: ${userData.email_personal} ← Promoted as identifier`);
+    console.log(`📧 Email Personal (trait): ${userData.email_personal}`);
+    console.log(`🎓 Email IU (trait): ${userData.email_iu}`);
+    console.log('💡 "email" trait is promoted as identifier in Segment Profile Explorer');
     
     // Track application submitted
     trackApplicationSubmitted(userData.program, getProgramName(userData.program), userId);

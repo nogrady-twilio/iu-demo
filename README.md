@@ -76,6 +76,7 @@ This website demonstrates three critical IU use cases with full Segment tracking
 ```javascript
 {
   userId: "student@iu.de", // Actual email as user_id
+  email: "student@email.com", // ← Promoted as identifier
   email_personal: "student@email.com",
   email_iu: "student@student.iu.org", 
   phone: "+49123456789",
