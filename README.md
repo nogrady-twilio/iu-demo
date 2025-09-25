@@ -6,16 +6,15 @@ A comprehensive replica of iu.org with embedded Segment tracking for the Mobile 
 
 This website demonstrates three critical IU use cases with full Segment tracking:
 
-### 🔗 Cross-Device Recognition & ID Resolution
-- **User ID Strategy**: Email addresses are hashed to create consistent user_id across devices
-- **Same Email = Same User**: `student@iu.de` always generates the same user_id (e.g., `user_f4a8b2c`)
-- **ID Resolution Magic**: Each system sends only ONE email property:
-  - IU Website: `{email: "john.doe@gmail.com"}` → `user_abc123`
-  - myCampus: `{email: "john.doe@student.iu.org"}` → `user_abc123` (same user!)
-  - Library: `{email: "john.doe@student.iu.org"}` → `user_abc123` (same user!)
-- **Segment Auto-Merge**: ID Resolution automatically recognizes multiple emails belong to same person
-- **Cross-Device Journey**: Student browsing on mobile, applying on laptop, attending events on tablet - all tracked as same user
-- **Privacy-Friendly**: Email is hashed, not stored in plain text in analytics
+### 📧 Email-Based User Identification
+- **User ID Strategy**: Actual email address used as user_id for clean, searchable profiles
+- **Direct Mapping**: `student@iu.de` → user_id: `student@iu.de` (no hashing)
+- **Trait Storage**: Both emails stored as profile traits:
+  - `email_personal`: "john.doe@gmail.com" 
+  - `email_iu`: "john.doe@student.iu.org"
+- **Easy Search**: Support team can directly search Segment by email address
+- **Cross-Device Journey**: Same email = same user_id across all devices and platforms
+- **Clean Data**: Human-readable identifiers, no cryptic hashes to decode
 
 ### 1. New Student Onboarding (Multi-channel, Consent-aware)
 - **Goal**: Guide new enrollees through first weeks to reduce "no login in 7 days"
@@ -76,7 +75,7 @@ This website demonstrates three critical IU use cases with full Segment tracking
 ### ✅ User Traits Captured
 ```javascript
 {
-  userId: "user_f4a8b2c", // Hashed email for cross-device recognition
+  userId: "student@iu.de", // Actual email as user_id
   email_personal: "student@email.com",
   email_iu: "student@student.iu.org", 
   phone: "+49123456789",

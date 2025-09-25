@@ -251,17 +251,18 @@ function identifyUser(userId, traits = {}) {
     window.IU_UserState.userId = userId;
     window.IU_UserState.userTraits = userTraits;
     
-    // Send only ONE email property per identify call (realistic scenario)
-    // Segment's ID Resolution will merge profiles when multiple emails are detected
-    if (userTraits.email_personal) {
-        userTraits.email = userTraits.email_personal; // Only send personal email
-    }
+    // Keep all email information as traits (not identifiers)
+    // User ID is now the actual email address
     
-    // Call Segment identify with only ONE email property
+    // Call Segment identify with email as user_id and traits
     analytics.identify(userId, userTraits);
-    console.log('👤 User Identified with single email:', userId, userTraits.email);
+    console.log('👤 User Identified:', userId);
+    console.log('📧 Email Traits:', {
+        email_personal: userTraits.email_personal,
+        email_iu: userTraits.email_iu
+    });
     
-    // Store global state to simulate different login scenarios
+    // Store global state
     window.IU_UserState.userId = userId;
     window.IU_UserState.userTraits = userTraits;
     
@@ -492,56 +493,23 @@ function demoEventTracking() {
 }
 
 /**
- * SIMULATE IU SYSTEM LOGIN
- * This simulates when the same user logs into a different IU system using their IU email
- * Segment's ID Resolution should merge these profiles
+ * DEMONSTRATE TRAIT-BASED EMAIL TRACKING
+ * Shows how both emails are stored as traits on the same profile
  */
-function simulateIUSystemLogin(iuEmail, userId) {
-    const iuTraits = {
-        email: iuEmail,  // Only IU email this time
-        system: 'myCampus',
-        login_method: 'sso',
-        timestamp: new Date().toISOString()
-    };
-    
-    analytics.identify(userId, iuTraits);
-    console.log('🎓 IU System Login - User identified with IU email only:', userId, iuEmail);
-    console.log('🔄 ID Resolution will merge this with personal email profile');
-    
-    analytics.track('System Login', {
-        system: 'myCampus',
-        email_type: 'institutional',
-        user_id: userId
-    });
-}
-
-/**
- * DEMONSTRATE ID RESOLUTION
- * Shows how multiple emails get resolved to same profile
- */
-function demonstrateIDResolution() {
+function demonstrateEmailTraits() {
     if (!window.IU_UserState.userId) {
-        console.log('❌ Please sign up first to see ID Resolution demo');
+        console.log('❌ Please sign up first to see email traits demo');
         return;
     }
     
     const userId = window.IU_UserState.userId;
-    const personalEmail = window.IU_UserState.userTraits.email;
-    const iuEmail = personalEmail.replace('@', '@student.iu.org');
+    const userTraits = window.IU_UserState.userTraits;
     
-    console.log('🎬 ID Resolution Demo Starting...');
-    console.log(`📧 Personal Email: ${personalEmail}`);
-    console.log(`🎓 IU Email: ${iuEmail}`);
-    
-    setTimeout(() => {
-        console.log('\n--- Login to myCampus with IU email ---');
-        simulateIUSystemLogin(iuEmail, userId);
-    }, 2000);
-    
-    setTimeout(() => {
-        console.log('\n✅ ID Resolution Demo Complete!');
-        console.log('📊 Both emails now appear in same Segment profile through ID Resolution');
-    }, 4000);
+    console.log('🎬 Email Traits Demo:');
+    console.log(`👤 User ID: ${userId}`);
+    console.log(`📧 Personal Email (trait): ${userTraits.email_personal}`);
+    console.log(`🎓 IU Email (trait): ${userTraits.email_iu}`);
+    console.log('💡 Both emails are stored as traits on the same profile');
 }
 
 // Make functions available globally for HTML onclick handlers
@@ -555,8 +523,7 @@ window.trackContactPreferenceSet = trackContactPreferenceSet;
 window.trackInvoiceViewed = trackInvoiceViewed;
 window.identifyUser = identifyUser;
 window.resetAnalytics = resetAnalytics;
-window.simulateIUSystemLogin = simulateIUSystemLogin;
-window.demonstrateIDResolution = demonstrateIDResolution;
+window.demonstrateEmailTraits = demonstrateEmailTraits;
 // Churn risk signal tracking removed as requested
 window.trackEngagementEvent = trackEngagementEvent;
 window.trackOnboardingStep = trackOnboardingStep;

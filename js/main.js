@@ -7,23 +7,7 @@
 let currentUser = null;
 let isLoggedIn = false;
 
-/**
- * Generate a simple hash from email for consistent user_id across devices
- * This ensures the same email always generates the same user_id
- */
-function hashEmail(email) {
-    let hash = 0;
-    const normalizedEmail = email.toLowerCase().trim();
-    
-    for (let i = 0; i < normalizedEmail.length; i++) {
-        const char = normalizedEmail.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32-bit integer
-    }
-    
-    // Convert to positive hex string for cleaner user_id
-    return 'user_' + Math.abs(hash).toString(16);
-}
+// Hash function removed - now using actual email as user_id
 
 /**
  * Initialize the application
@@ -198,14 +182,18 @@ function handleLogin(event) {
     const formData = new FormData(event.target);
     const email = formData.get('email');
     
-    // Generate consistent user_id from hashed email for cross-device recognition
-    const userId = hashEmail(email);
+    // Use actual email as user_id for Segment profile
+    const userId = email.toLowerCase().trim();
     
     // Create user object with existing data (simulate database lookup)
+    // Generate IU email address for students
+    const emailPrefix = email.split('@')[0];
+    const iuEmail = `${emailPrefix}@student.iu.org`;
+    
     currentUser = {
         userId: userId,
         email_personal: email,
-        email_iu: email.replace('@', '@student.iu.org'),
+        email_iu: iuEmail,
         firstName: 'Demo',
         lastName: 'Student',
         phone: '+49123456789',
@@ -221,12 +209,11 @@ function handleLogin(event) {
     // Track login
     identifyUser(userId, currentUser);
     
-    // Show cross-device recognition in console
-    console.log(`🔗 Cross-Device Recognition: Email "${email}" → User ID "${userId}"`);
+    // Show user identification in console
+    console.log(`👤 User ID set to: "${userId}"`);
     console.log(`📧 Personal Email: ${currentUser.email_personal}`);
     console.log(`🎓 IU Email: ${currentUser.email_iu}`);
-    console.log('💡 Same user_id used across all devices and IU systems');
-    console.log('🎯 Try: demonstrateIDResolution() to see email merging in action');
+    console.log('💡 Both emails stored as traits on the profile');
     
     // Track onboarding step - will create "MyCampus Login" event
     trackOnboardingStep('mycampus_login', true, {
@@ -270,8 +257,8 @@ function handleSignup(event) {
         whatsapp_transactional_opt_in: true // Always true
     };
     
-    // Generate consistent user_id from hashed email for cross-device recognition
-    const userId = hashEmail(userData.email_personal);
+    // Use actual email as user_id for Segment profile
+    const userId = userData.email_personal.toLowerCase().trim();
     userData.userId = userId;
     
     // Generate IU email address for students
@@ -284,11 +271,11 @@ function handleSignup(event) {
     // Identify user in Segment
     identifyUser(userId, userData);
     
-    // Show cross-device recognition in console
-    console.log(`🔗 Cross-Device Recognition: Email "${userData.email_personal}" → User ID "${userId}"`);
+    // Show user identification in console
+    console.log(`👤 User ID set to: "${userId}"`);
+    console.log(`📧 Personal Email: ${userData.email_personal}`);
     console.log(`🎓 Generated IU Email: ${userData.email_iu}`);
-    console.log('💡 Same user_id will be used across all devices and IU systems');
-    console.log('🎯 Try: demonstrateIDResolution() to see email merging in action');
+    console.log('💡 Both emails stored as traits on the profile');
     
     // Track application submitted
     trackApplicationSubmitted(userData.program, getProgramName(userData.program), userId);

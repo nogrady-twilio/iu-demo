@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email as User ID Demo - IU Segment Analytics</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .demo-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #c53030;
+        }
+        .result {
+            background: #f0f4f8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .highlight {
+            background: #fed7d7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #e53e3e;
+            font-weight: 600;
+        }
+        .success {
+            color: #38a169;
+            font-weight: 600;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #cbd5e0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        .traits-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .trait-box {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>📧 Email as User ID Demo</h1>
+        <p>This demo shows how using the actual email address as the user_id creates a clean, searchable Segment profile with both emails stored as traits.</p>
+        
+        <h3>Key Benefits:</h3>
+        <ul>
+            <li><strong>Simple & Clean:</strong> Email address is directly the user_id</li>
+            <li><strong>Searchable:</strong> Easy to find profiles in Segment by email</li>
+            <li><strong>No Hashing:</strong> Human-readable user identifiers</li>
+            <li><strong>Trait Storage:</strong> Both personal and IU emails stored as profile traits</li>
+        </ul>
+    </div>
+
+    <div class="demo-container">
+        <h2>🔧 Test Email-Based User ID</h2>
+        <p>Enter an email address to see how it becomes the user_id and generates the corresponding IU email trait:</p>
+        
+        <input type="email" class="email-input" id="testEmail" placeholder="student@university.com">
+        <br>
+        <button class="btn" onclick="generateProfile()">Create Segment Profile</button>
+        
+        <div id="profileResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="demo-container">
+        <h2>📊 Segment Implementation</h2>
+        
+        <h3>How It Works:</h3>
+        <div class="code-block">
+// User signs up with personal email
+const userEmail = "john.doe@gmail.com";
+const iuEmail = "john.doe@student.iu.org";
+
+// Segment identify call
+analytics.identify(userEmail, {  // ← Email IS the user_id
+    email_personal: userEmail,   // ← Stored as trait
+    email_iu: iuEmail,          // ← Stored as trait
+    first_name: "John",
+    last_name: "Doe",
+    program: "MBA",
+    semester: "2024_spring",
+    // ... other traits
+});
+        </div>
+
+        <h3>Result in Segment Profile Explorer:</h3>
+        <div class="traits-display">
+            <div class="trait-box">
+                <strong>User ID (Identifier)</strong><br>
+                <code class="highlight">john.doe@gmail.com</code>
+            </div>
+            <div class="trait-box">
+                <strong>Profile Traits</strong><br>
+                <code>email_personal: john.doe@gmail.com</code><br>
+                <code>email_iu: john.doe@student.iu.org</code><br>
+                <code>first_name: John</code><br>
+                <code>program: MBA</code>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>🎯 Benefits for IU</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>🔍 Easy Search</strong><br>
+                Support team can directly search by email address in Segment
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>📊 Clean Data</strong><br>
+                No hash collisions or cryptic user IDs to decode
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>🎓 Dual Context</strong><br>
+                Both personal and institutional emails available as traits
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <strong>📧 Smart Targeting</strong><br>
+                Can target based on email domain or type
+            </div>
+        </div>
+        
+        <h3>Example Audience Queries:</h3>
+        <div class="code-block">
+// Target students with Gmail personal accounts
+email_personal contains "@gmail.com"
+
+// Target all IU students 
+email_iu contains "@student.iu.org"
+
+// Target specific programme students
+program = "MBA" AND email_iu exists
+
+// Target by preferred communication channel
+preferred_channel = "whatsapp" AND whatsapp_marketing_opt_in = true
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>📋 Demo Instructions</h2>
+        
+        <ol>
+            <li><strong>Enter Email:</strong> Type any email address above</li>
+            <li><strong>Generate Profile:</strong> Click button to see Segment structure</li>
+            <li><strong>Note User ID:</strong> The email itself becomes the user_id</li>
+            <li><strong>View Traits:</strong> Both emails are stored as separate traits</li>
+            <li><strong>Test on Main Site:</strong> Try signing up on index.html with the same email</li>
+        </ol>
+
+        <div class="highlight" style="display: block; padding: 1rem; text-align: center; margin: 1rem 0;">
+            <strong>Mobile Viking Demo Tip:</strong> Show how this makes user lookup and customer support much easier compared to hashed IDs.
+        </div>
+    </div>
+
+    <script>
+        function generateProfile() {
+            const email = document.getElementById('testEmail').value.trim();
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+
+            // Generate IU email
+            const emailPrefix = email.split('@')[0];
+            const iuEmail = `${emailPrefix}@student.iu.org`;
+
+            // Show the profile structure
+            const result = document.getElementById('profileResult');
+            result.innerHTML = `
+                <h4 class="success">✅ Segment Profile Generated</h4>
+                
+                <strong>User ID (Identifier):</strong><br>
+                <span class="highlight">${email}</span>
+                
+                <h5 style="margin-top: 1rem;">Profile Traits:</h5>
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 4px; margin: 0.5rem 0;">
+                    <strong>email_personal:</strong> "${email}"<br>
+                    <strong>email_iu:</strong> "${iuEmail}"<br>
+                    <strong>first_name:</strong> "John"<br>
+                    <strong>last_name:</strong> "Doe"<br>
+                    <strong>program:</strong> "MBA"<br>
+                    <strong>semester:</strong> "2024_spring"<br>
+                    <strong>preferred_channel:</strong> "email"<br>
+                    <strong>email_marketing_opt_in:</strong> true<br>
+                    <strong>created_at:</strong> "${new Date().toISOString()}"
+                </div>
+                
+                <h5 style="margin-top: 1rem;">Segment Analytics Call:</h5>
+                <div style="background: #2d3748; color: #cbd5e0; padding: 1rem; border-radius: 4px; font-family: monospace; font-size: 12px;">
+analytics.identify("${email}", {<br>
+&nbsp;&nbsp;email_personal: "${email}",<br>
+&nbsp;&nbsp;email_iu: "${iuEmail}",<br>
+&nbsp;&nbsp;first_name: "John",<br>
+&nbsp;&nbsp;last_name: "Doe",<br>
+&nbsp;&nbsp;program: "MBA",<br>
+&nbsp;&nbsp;semester: "2024_spring",<br>
+&nbsp;&nbsp;preferred_channel: "email",<br>
+&nbsp;&nbsp;email_marketing_opt_in: true,<br>
+&nbsp;&nbsp;created_at: "${new Date().toISOString()}"<br>
+});
+                </div>
+                
+                <p style="margin-top: 1rem; color: #38a169; font-weight: 600;">
+                    🔍 This profile can be found in Segment by searching for: "${email}"
+                </p>
+            `;
+            result.style.display = 'block';
+        }
+
+        // Pre-populate with example
+        document.getElementById('testEmail').value = 'john.doe@gmail.com';
+    </script>
+</body>
+</html>
